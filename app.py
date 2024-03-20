@@ -11,7 +11,18 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.sqlite3 '
 app.config['SQLACHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
-
+class users(db.Model):
+    _id  = db.Column(db.Integer, primary_key = True)
+    fname = db.Column(db.String(100))
+    lname = db.Column(db.String(100))
+    password = db.Column(db.String(100))
+    confirm_password = db.Column(db.String(100))
+    
+    def __init__(self, fname, lname, password, confirm_password):
+        self.fname = fname
+        self.lname = lname
+        self.password = password
+        self.confirm_password = confirm_password
 
 @app.route("/login", methods = ["POST", "GET"])
 def login():
