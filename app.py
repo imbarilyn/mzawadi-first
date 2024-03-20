@@ -15,14 +15,16 @@ class users(db.Model):
     _id  = db.Column(db.Integer, primary_key = True)
     fname = db.Column(db.String(100))
     lname = db.Column(db.String(100))
+    email = db.Column(db.String(100))
     password = db.Column(db.String(100))
-    confirm_password = db.Column(db.String(100))
+    confirmPassword = db.Column(db.String(100))
     
-    def __init__(self, fname, lname, password, confirm_password):
+    def __init__(self, fname, lname, email, password, confirmPassword):
         self.fname = fname
         self.lname = lname
+        self.email = email
         self.password = password
-        self.confirm_password = confirm_password
+        self.confirm_password = confirmPassword
 
 @app.route("/login", methods = ["POST", "GET"])
 def login():
@@ -31,14 +33,17 @@ def login():
         # x = request.form
         # print(x)
         email = request.form["email"]
-        session["email"] = email        
+        # session["email"] = email        
         password = request.form.get("password")
         if len(email) < 12:
             flash("Email to short") 
         elif len(password) < 8:      
             flash("Password too short")
         else:
-            return redirect(url_for("index"))
+            user = users.query.filter_by(name=email).first()
+            if user and user.password == password:
+                session["email"] = email
+                return redirect(url_for("index"))
     elif "email" in session:
         flash("You are logged in already!")
         return redirect(url_for("index"))
@@ -57,27 +62,36 @@ def index():
 def register():
     if request.method == "POST":
         session.permanent = True
-        reg = request.form
-        print(reg)
+        # user = request.form
+        # print(user)
         email = request.form["email"]
         session["email"] = email
-        first_name = request.form.get("fname")
-        last_name = request.form.get("lname")
+        # print(session["email"])
+        fname= request.form.get("fname")
+        lname= request.form.get("lname")
         password = request.form.get("password")
-        email_address = request.form.get("email")
-        confirm_password = request.form.get("confirmPassword")
-        if len(first_name) <= 1:
+        email = request.form.get("email")
+        confirmPassword = request.form.get("confirmPassword")
+        if len(fname) <= 1:
             flash("please enter more than one character", category="error")
-        elif len(last_name) < 1:
+        elif len(lname) < 1:
             flash("please enter more than one character", category="error")
-        elif len(email_address) < 8:
+        elif len(email) < 8:
           flash("Email too short")        
-        elif password != confirm_password:
+        elif password != confirmPassword:
             flash("Password don't match", category="error")
         elif len(password) <  8:
             flash("Password is too short!", category="error")
-        else:        
-            return redirect(url_for("index"))
+        else:
+            user = request.form
+            usr = users(user)
+            email = usr.email
+            if users.query.filter_by(name = email).all().count() > 0:
+                flash("Account already exists!")
+            else:                            
+                db.session.add(usr)
+                db.session.commit()
+                return redirect(url_for("index"))
     return render_template("register.html")
 
 @app.route("/logout")
@@ -88,4 +102,6 @@ def logout():
 
 
 if __name__ == "__main__":
+    with app.app_context():
+        db.create_all()
     app.run(debug = True)
