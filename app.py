@@ -10,6 +10,8 @@ def login():
     if request.method == "POST":
         session.permanent = True
         email = request.form["email"]
+        # x = request.form
+        # print(x)
         session["email"] = email
         flash("Welcome aboard")
         return redirect(url_for("index"))
@@ -18,7 +20,6 @@ def login():
             flash("You are logged in already!")
             return redirect(url_for("index"))
         return render_template("login.html")   
-    # return "<p>Welcome</p>"
 
 @app.route("/index")
 def index():
@@ -28,8 +29,19 @@ def index():
     else:
         return render_template("login.html")
 
-@app.route("/register")
+@app.route("/register", methods=["POST","GET"])
 def register():
+    if request.method == "POST":
+        session.permanent = True
+        # reg = request.form
+        # print(reg)
+        fname = request.form["fname"]
+        session["fname"] = fname
+        return redirect(url_for("index"))
+    else:
+        return render_template("register.html")
+        
+        
     return render_template("register.html")
 
 @app.route("/logout")
