@@ -35,6 +35,13 @@
                             <div class="col-lg-7">
                                 <div class="p-5">
                                     <div class="text-center">
+                                        {%with messages = get_flashed_messages()%}
+                                            {%if messages%}
+                                                {%for msg in messages%}
+                                                    <p><small>{{msg}}</small></p>
+                                                {%endfor%}
+                                            {%endif%}
+                                        {% endwith %}
                                         <h1 class="h4 text-gray-900 mb-4">Create an Account!</h1>
                                     </div>
                                     <form class="user" action = "#" method="post">
@@ -58,7 +65,7 @@
                                                     id="exampleInputPassword" placeholder="Password">
                                             </div>
                                             <div class="col-sm-6">
-                                                <input type="password"  name = "password" class="form-control form-control-user"
+                                                <input type="password"  name = "confirmPassword" class="form-control form-control-user"
                                                     id="exampleRepeatPassword" placeholder="Repeat Password">
                                             </div>
                                         </div>
