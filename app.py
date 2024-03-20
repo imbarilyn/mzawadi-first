@@ -25,7 +25,7 @@ def login():
 def index():
     user = session["email"]
     if "email" in session:
-        return render_template("index.html", user=user)
+        return render_template("index.html", user = user)
     else:
         return render_template("login.html")
 
@@ -33,15 +33,27 @@ def index():
 def register():
     if request.method == "POST":
         session.permanent = True
-        # reg = request.form
-        # print(reg)
-        fname = request.form["fname"]
-        session["fname"] = fname
-        return redirect(url_for("index"))
-    else:
-        return render_template("register.html")
-        
-        
+        reg = request.form
+        print(reg)
+        email = request.form["email"]
+        session["email"] = email
+        first_name = request.form.get("fname")
+        last_name = request.form.get("lname")
+        password = request.form.get("password")
+        email_address = request.form.get("email")
+        confirm_password = request.form.get("confirmPassword")
+        if len(first_name) <= 1:
+            flash("please enter more than one character", category="error")
+        elif len(last_name) < 1:
+            flash("please enter more than one character", category="error")
+        elif len(email_address) < 8:
+          flash("Email too short")        
+        elif password != confirm_password:
+            flash("Password don't match", category="error")
+        elif len(password) <  8:
+            flash("Password is too short!", category="error")
+        else:        
+            return redirect(url_for("index"))
     return render_template("register.html")
 
 @app.route("/logout")
@@ -49,7 +61,5 @@ def logout():
     session.clear()
     flash("You are logged out!")
     return redirect(url_for("login"))
-
-
 if __name__ == "__main__":
     app.run(debug = True)
