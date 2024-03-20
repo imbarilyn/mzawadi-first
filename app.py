@@ -1,10 +1,17 @@
 from flask import Flask, render_template, request, session, redirect, url_for,flash
 from datetime import timedelta
-from S
+from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 app.secret_key = "kjhfgdjkouae"
 app.permanent_session_lifetime = timedelta(days=7)
+
+#creating the database connection
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.sqlite3 '
+app.config['SQLACHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
+
+
 
 @app.route("/login", methods = ["POST", "GET"])
 def login():
