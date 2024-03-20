@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, session, redirect, url_for,flash
 from datetime import timedelta
+from S
 
 app = Flask(__name__)
 app.secret_key = "kjhfgdjkouae"
@@ -9,17 +10,22 @@ app.permanent_session_lifetime = timedelta(days=7)
 def login():
     if request.method == "POST":
         session.permanent = True
-        email = request.form["email"]
         # x = request.form
         # print(x)
-        session["email"] = email
-        flash("Welcome aboard")
-        return redirect(url_for("index"))
-    else:        
-        if "email" in session:
-            flash("You are logged in already!")
+        email = request.form["email"]
+        session["email"] = email        
+        password = request.form.get("password")
+        if len(email) < 12:
+            flash("Email to short") 
+        elif len(password) < 8:      
+            flash("Password too short")
+        else:
             return redirect(url_for("index"))
-        return render_template("login.html")   
+    elif "email" in session:
+        flash("You are logged in already!")
+        return redirect(url_for("index"))
+    return render_template("login.html")
+     
 
 @app.route("/index")
 def index():
@@ -61,5 +67,7 @@ def logout():
     session.clear()
     flash("You are logged out!")
     return redirect(url_for("login"))
+
+
 if __name__ == "__main__":
     app.run(debug = True)
