@@ -43,16 +43,18 @@ def login():
         session.permanent = True
         # x = request.form
         # print(x)
-        email = request.form.get("email")      
+        email = request.form.get("email")              
         password = request.form.get("password")
-        user = User.query.filter_by(email=email).first()
-        if user and user.password == password:
+        usr = User.query.filter_by(email=email).first()
+        # print(usr.fname)
+        if usr and usr.password == password:
             session["email"] = email
             return redirect(url_for("index"))
         else:
             flash("Invalid email or password", category="error")
     elif "email" in session:
         flash("You are logged in already!")
+        # print(usr.fname)
         return redirect(url_for("index"))
     return render_template("login.html")
      
@@ -60,8 +62,10 @@ def login():
 @app.route("/index")
 def index():
     user = session["email"]
+    welcome_msg = User.query.filter_by(email = user).first()
+    # print(welcome_msg.fname)
     if "email" in session:
-        return render_template("index.html", user = user)
+        return render_template("index.html", welcome_msg=welcome_msg.fname)
     else:
         return render_template("login.html")
 
